@@ -1,0 +1,14 @@
+module accumulator (
+input clk,          
+input rst,             
+input en,             
+input [31:0] axb,      
+output reg [31:0] acc_out
+);
+always @(posedge clk or posedge rst) begin
+if (rst) 
+acc_out <= 32'b0; 
+else if (en)
+acc_out <= acc_out + axb; 
+ end
+endmodule
