@@ -1,0 +1,7 @@
+
+module subtractor(
+input [31:0] Sum,arxbr,
+output [31:0] axb
+    );
+    assign axb=Sum-arxbr;
+endmodule
