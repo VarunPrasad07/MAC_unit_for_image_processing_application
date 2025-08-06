@@ -1,0 +1,56 @@
+module mac_top (
+    input clk,              // Clock signal
+    input rst,              // Reset signal (active high)
+    input en,               // Enable signal
+    input signed [15:0] a,  // Multiplicand
+    input signed [15:0] b,  // Multiplier
+    output [31:0] final_result // Final accumulated output
+);
+    wire sign_A, sign_B;
+    wire [15:0] A, B, ar, br;
+    wire [31:0] axbr, bxar, arxbr;
+    wire [31:0] sum, axb;
+wire [31:0] acc_out, signed_result;
+wire [31:0] y;
+wire cout;
+sign_det sign_detector (.a(a), .b(b), 
+        .sign_A(sign_A), .sign_B(sign_B),
+        .A(A), .B(B)
+    );
+    round rounding_unit (
+        .A(A), .B(B),
+        .ar(ar), .br(br)
+    );
+
+    shifter shift_unit (
+        .A(A), .B(B),
+        .ar(ar), .br(br),
+        .axbr(axbr), .bxar(bxar), .arxbr(arxbr)
+    );
+    adder adder_unit (
+        .axbr(axbr), .bxar(bxar),
+        .Sum(sum), .Cout(cout)
+    );
+
+    subtractor subtractor_unit (
+        .Sum(sum), .arxbr(arxbr),
+        .axb(axb)
+    );
+
+    signed_set sign_set_unit (
+        .axb(axb), .a(a), .b(b),
+        .result(signed_result)
+    );
+
+    accumulator acc_unit (
+        .clk(clk), .rst(rst), .en(en),
+        .axb(signed_result),
+        .acc_out(acc_out)
+    );
+
+    HCA_adder_32bit final_adder (
+        .result(acc_out), .out(signed_result),
+        .y(final_result), .cout(cout)
+    );
+
+endmodule
