@@ -1,0 +1,24 @@
+from PIL import Image
+import numpy as np
+
+# Constants
+WIDTH = 32
+HEIGHT = 32
+OUTPUT_FILE = r"C:\Users\varun\college projects\topmodule\topmodule.sim\sim_1\behav\xsim\output_image.mem"
+
+# Load and resize image
+img = Image.open("1c90e0ae-bfb9-4b6f-adc3-599cc56bb72a.png").resize((WIDTH, HEIGHT))
+
+# Convert to grayscale
+gray_img = img.convert("L")  # 'L' mode = 8-bit pixels, black and white
+pixels = np.array(gray_img).flatten()
+
+# Ensure values are in uint8 range
+pixels = np.clip(pixels, 0, 255).astype(np.uint8)
+
+# Save as .mem file (hex format, 2 hex digits per line)
+with open(OUTPUT_FILE, "w") as f:
+    for value in pixels:
+        f.write(f"{value:02x}\n")
+
+print(f"✅ Successfully saved {len(pixels)} pixels to '{OUTPUT_FILE}'")
