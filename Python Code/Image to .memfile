@@ -1,0 +1,17 @@
+from PIL import Image
+import numpy as np
+
+# Load image
+img = Image.open(r'D:\Games\gta 5\32-bit-pixel-art-effect-style-sample-1354738534.jpeg').convert('L')  # 'L' for grayscale
+img = img.resize((32, 32))  # Resize to 32x32 if needed
+
+# Convert to numpy array
+pixels = np.array(img)
+
+# Flatten to 1D array
+pixels = pixels.flatten()
+
+# Write to .mem file
+with open('image.mem', 'w') as f:
+    for pixel in pixels:
+        f.write(f'{pixel:02X}\n')  # HEX format, 2 characters wide
