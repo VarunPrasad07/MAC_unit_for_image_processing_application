@@ -1,0 +1,31 @@
+module log (
+input [15:0]c,
+input  [15:0] d,   
+output reg [4:0] log,
+output  [31:0] e  
+);
+integer i;
+always @(*) begin
+log = 0;
+for (i = 16; i >= 0; i = i - 1) begin
+if (d[i]) begin
+log = i; 
+end
+end
+end
+assign e=c<<log;
+endmodule
+module shifter(
+input [15:0]A,
+input [15:0]B,
+input [15:0]ar,
+input [15:0]br,
+output [31:0]axbr,
+output [31:0]bxar,
+output [31:0]arxbr
+);
+log shifter1(.c(A),.d(br),.e(axbr));
+log shifter2(.c(B),.d(ar),.e(bxar));
+log shifter3(.c(ar),.d(br),.e(arxbr));
+endmodule
+
