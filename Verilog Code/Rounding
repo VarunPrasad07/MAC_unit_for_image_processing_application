@@ -1,0 +1,34 @@
+module round_to(
+input  wire [15:0] c,
+output reg  [15:0] cr 
+);
+reg [15:0] lp,up;
+integer i;
+always @(*) begin
+ if (c == 0) begin
+cr = 1;  
+end else if ((c& (c - 1)) == 0) begin
+cr = c;
+end else begin
+lp = 1;
+for (i = 0; i < 16; i = i + 1) begin
+if ((lp << 1) <= c)
+lp = lp << 1;
+end
+up = lp << 1;
+if ((c - lp) < (up - c)) 
+cr= lp; 
+else 
+cr= up;
+end
+end
+endmodule
+module round(
+input [15:0]A,
+input [15:0]B,
+output[15:0]ar,
+output[15:0]br
+);
+round_to r1(.c(A),.cr(ar));
+round_to r2(.c(B),.cr(br));
+endmodule
