@@ -1,0 +1,66 @@
+`timescale 1ns/1ps
+
+module mac_top_tb;
+
+    reg clk;
+    reg rst;
+    reg en;
+    reg signed [15:0] a, b;
+    wire [31:0] final_result;
+
+    reg [7:0] image_data [0:1023]; // 32x32 image = 1024 pixels
+    integer i;
+    integer mem_file;
+
+    mac_top uut (
+        .clk(clk),
+        .rst(rst),
+        .en(en),
+        .a(a),
+        .b(b),
+        .final_result(final_result)
+    );
+
+    // Clock generation: 100 MHz
+    always #5 clk = ~clk;
+
+    initial begin
+        clk = 0;
+        rst = 1;
+        en = 0;
+        a = 0;
+        b = 0;
+
+        $readmemh("image.mem", image_data);
+
+        // Open file for writing final_result
+        mem_file = $fopen("output_image.mem", "w");
+        if (!mem_file) begin
+            $display("❌ ERROR: Could not open output_image.mem");
+            $finish;
+        end else begin
+            $display("✅ output_image.mem opened successfully.");
+        end
+
+        // Reset pulse
+        #10 rst = 0;
+        en = 1;
+
+        // Send pixel pairs and record output
+        for (i = 0; i < 1024; i = i + 2) begin
+            a = {8'b0, image_data[i]};
+            b = {8'b0, image_data[i+1]};
+            #10; // wait one clock cycle to allow result to updatew
+
+            // Write the full 32-bit result in hexadecimal
+            $fwrite(mem_file, "%08x\n", final_result);
+        end
+
+        en = 0;
+        #100;
+
+        $display("✅ Final accumulated result: %d", final_result);
+        $fclose(mem_file);
+        $stop;
+    end
+endmodule
