@@ -1,0 +1,25 @@
+module adder(input [31:0] axbr, input [31:0] bxar, output [31:0] Sum, output Cout);
+    wire [31:0] P, G;
+    genvar i;
+    generate
+        for(i = 0; i < 32; i = i + 1) begin : pg_gen
+            assign P[i] = axbr[i] ^ bxar[i];  // Propagate
+            assign G[i] = axbr[i] & bxar[i];  // Generate
+        end
+    endgenerate
+    wire [31:0] C1;
+    assign C1[0] = G[0];
+
+    generate
+        for(i = 1; i < 32; i = i + 1) begin : gray_cells
+            assign C1[i] = G[i] | (P[i] & C1[i-1]); 
+        end
+    endgenerate
+    generate
+        for(i = 0; i < 32; i = i + 1) begin : sum_gen
+            assign Sum[i] = P[i] ^ C1[i];  // Final sum
+        end
+    endgenerate
+    assign Cout = C1[31];  
+
+endmodule
