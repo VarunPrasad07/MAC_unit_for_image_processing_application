@@ -1,0 +1,14 @@
+module signed_set(
+    input signed [31:0] axb,   
+    input signed [15:0] a,b,   
+    output reg [31:0] result      
+);
+
+    always @(*) begin
+        if (axb >= a*b)
+            result = axb;
+        else
+            result = {a,b};
+    end
+
+endmodule
